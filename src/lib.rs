@@ -17,6 +17,8 @@ pub use self::bitfield::{Bitfield, Change};
 pub use self::proof::Proof;
 pub use self::verification::Verification;
 
+use std::cmp;
+
 /// Index a tree structure or something.
 pub struct TreeIndex {
   bitfield: Bitfield,
@@ -109,8 +111,39 @@ impl TreeIndex {
   }
 
   /// Create a digest for data at index.
-  pub fn digest(&self) {
-    unimplemented!();
+  pub fn digest(&mut self, index: usize) -> usize {
+    if self.get(index) {
+      return 1;
+    }
+
+    let mut digest = 0;
+    let mut next = flat::sibling(index);
+    let max = cmp::max(next + 2, self.bitfield.len()); // TODO(from mafintosh/hypercore): make this less hacky
+
+    let mut bit = 2;
+    let mut depth = flat::depth(index);
+    let mut parent = flat::parent_with_depth(next, depth);
+    depth += 1;
+
+    while (flat::right_span(next) < max) || flat::left_span(parent) > 0 {
+      if self.get(next) {
+        digest |= bit;
+      }
+
+      if self.get(parent) {
+        digest |= 2 * bit + 1;
+        if digest + 1 == 4 * bit {
+          return 1;
+        }
+        return digest;
+      }
+
+      next = flat::sibling(parent);
+      parent = flat::parent_with_depth(next, depth);
+      depth += 1;
+      bit *= 2;
+    }
+    digest
   }
 
   /// Get the position of the highest entry in the tree. Aka max.

@@ -11,17 +11,11 @@ extern crate flat_tree as flat;
 extern crate sparse_bitfield as bitfield;
 
 mod proof;
+mod verification;
 
 pub use self::bitfield::{Bitfield, Change};
 pub use self::proof::Proof;
-
-/// Returned by `.verified_by()`.
-pub struct Verification {
-  /// Node that verifies the index.
-  pub node: usize,
-  /// The highest Node found.
-  pub top: usize,
-}
+pub use self::verification::Verification;
 
 /// Index a tree structure or something.
 pub struct TreeIndex {

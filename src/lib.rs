@@ -68,9 +68,9 @@ impl TreeIndex {
 
     let mut digest = shift_right(index);
     let has_root = digest & 1;
-    let mut sibling = index;
     let mut next = index;
     let mut roots = Vec::new(); // `null` in JavaScript
+    let mut sibling;
 
     while digest > 0 {
       if digest == 1 && has_root > 0 {
@@ -94,10 +94,9 @@ impl TreeIndex {
       }
 
       sibling = flat::sibling(next);
-      if is_even(digest) {
-        if self.get(sibling) {
-          // remote-tree.set(sibling)
-        }
+      if is_even(digest) && self.get(sibling) {
+        println!("sibling, {:?}", sibling);
+        // remote-tree.set(sibling)
       }
 
       next = flat::parent(next);
@@ -105,7 +104,7 @@ impl TreeIndex {
     }
 
     Some(Proof {
-      nodes: nodes,
+      nodes,
       verified_by: 0,
     })
   }

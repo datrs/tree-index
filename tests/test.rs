@@ -18,6 +18,7 @@ fn set_and_get() {
   assert_eq!(index.get(1), true, "parent of 0 and 2 is set");
 
   let mut index = TreeIndex::default();
+  // NOTE(yw): `.step_by()` is unstable.
   for i in (0..32).step_by(2) {
     index.set(i);
   }

@@ -26,3 +26,55 @@ fn set_and_get() {
   assert_eq!(index.get(23), true);
   assert_eq!(index.get(15), true);
 }
+
+#[test]
+fn digest() {
+  let mut index = TreeIndex::default();
+  assert_eq!(index.digest(0), num("0"), "has nothing");
+
+  let mut index = TreeIndex::default();
+  index.set(0);
+  assert_eq!(index.digest(0), num("1"), "has all");
+
+  let mut index = TreeIndex::default();
+  index.set(1);
+  assert_eq!(
+    index.digest(0),
+    num("101"),
+    "rooted, no sibling, no parent"
+  );
+
+  let mut index = TreeIndex::default();
+  index.set(2);
+  assert_eq!(
+    index.digest(0),
+    num("10"),
+    "not rooted, has sibling"
+  );
+
+  let mut index = TreeIndex::default();
+  index.set(1);
+  index.set(2);
+  assert_eq!(index.digest(0), num("1"), "has all");
+
+  let mut index = TreeIndex::default();
+  index.set(3);
+  index.set(2);
+  assert_eq!(
+    index.digest(0),
+    num("1011"),
+    "rooted, has sibling, no uncle, has grand parents"
+  );
+
+  let mut index = TreeIndex::default();
+  index.set(5);
+  assert_eq!(
+    index.digest(1),
+    num("10"),
+    "not rooted, has sibling"
+  );
+}
+
+fn num(input: &str) -> usize {
+  usize::from_str_radix(input, 2).unwrap()
+}

@@ -78,51 +78,49 @@ fn digest() {
 #[test]
 fn verified_by() {
   let mut index = TreeIndex::default();
-  assert_eq!(
-    index.verified_by(0),
-    Verification {
-      node: 0,
-      top: 0,
-    }
-  );
+
+  verify(&mut index, 0, 0, 0);
 
   index.set(0);
-  assert_eq!(
-    index.verified_by(0),
-    Verification {
-      node: 2,
-      top: 0,
-    }
-  );
+  verify(&mut index, 0, 2, 0);
 
   index.set(2);
-  assert_eq!(
-    index.verified_by(0),
-    Verification {
-      node: 4,
-      top: 4,
-    }
-  );
+  verify(&mut index, 0, 4, 4);
 
   index.set(5);
-  assert_eq!(
-    index.verified_by(0),
-    Verification {
-      node: 8,
-      top: 8,
-    }
-  );
+  verify(&mut index, 0, 8, 8);
 
   index.set(8);
-  assert_eq!(
-    index.verified_by(0),
-    Verification {
-      node: 10,
-      top: 8,
-    }
-  );
+  verify(&mut index, 0, 10, 8);
+
+  let mut index = TreeIndex::default();
+  index.set(10);
+  index.set(8);
+  index.set(13);
+  index.set(3);
+  index.set(17);
+  verify(&mut index, 10, 20, 20);
+
+  let mut index = TreeIndex::default();
+  index.set(7);
+  index.set(16);
+  index.set(18);
+  index.set(21);
+  index.set(25);
+  index.set(28);
+  verify(&mut index, 16, 30, 28);
+  verify(&mut index, 18, 30, 28);
+  verify(&mut index, 17, 30, 28);
 }
 
 fn num(input: &str) -> usize {
   usize::from_str_radix(input, 2).unwrap()
+}
+
+// Shorthand function to verify a tree-index and some values.
+fn verify(tree: &mut TreeIndex, index: usize, node: usize, top: usize) {
+  assert_eq!(
+    tree.verified_by(index),
+    Verification { node, top }
+  );
 }

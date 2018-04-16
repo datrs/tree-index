@@ -1,6 +1,7 @@
 /// A merkle proof for an index.
 ///
 /// Merkle trees are proven by checking the parent hashes.
+#[derive(Debug, PartialEq)]
 pub struct Proof {
   /// Index of the node this was verified by.
   pub verified_by: usize,

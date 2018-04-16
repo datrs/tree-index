@@ -1,7 +1,7 @@
 #![feature(iterator_step_by)]
 
 extern crate tree_index as tree;
-use tree::{Change, TreeIndex, Verification};
+use tree::{Change, Proof, TreeIndex, Verification};
 
 #[test]
 fn set_and_get() {
@@ -113,6 +113,12 @@ fn verified_by() {
   verify(&mut index, 17, 30, 28);
 }
 
+#[test]
+fn proof_without_a_digest() {
+  let mut index = TreeIndex::default();
+  assert_eq!(index.proof(0), None);
+}
+
 fn num(input: &str) -> usize {
   usize::from_str_radix(input, 2).unwrap()
 }
@@ -123,4 +129,15 @@ fn verify(tree: &mut TreeIndex, index: usize, node: usize, top: usize) {
     tree.verified_by(index),
     Verification { node, top }
   );
+}
+
+// Shorthand function to prove a proof.
+fn prove(
+  tree: &mut TreeIndex,
+  index: usize,
+  nodes: Vec<usize>,
+  verified_by: usize,
+) {
+  let proof = Proof::new(verified_by, nodes);
+  assert_eq!(tree.proof(index), Some(proof));
 }

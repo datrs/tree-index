@@ -58,10 +58,20 @@ impl TreeIndex {
   }
 
   /// Determine which Nodes prove the correctness for the Node at `index`.
+  ///
+  /// The passed buffer is filled with nodes that are verified by the same
+  /// index. This is done so allocations can happen at the top level, and a
+  /// buffer (pool) can be used to prevent extra allocations.
   // - opts.hash: always push index to nodes.
   // - nodes: proven nodes.
   // - opts.digest: not sure what digest does.
-  pub fn proof(&mut self, index: usize, nodes: Vec<usize>) -> Option<Proof> {
+  pub fn proof(
+    &mut self,
+    index: usize,
+    mut nodes: &mut Vec<usize>,
+    mut remote_tree: &mut Self,
+    mut roots: &mut Vec<usize>,
+  ) -> Option<usize> {
     if !self.get(index) {
       return None;
     }
@@ -69,13 +79,12 @@ impl TreeIndex {
     let mut digest = shift_right(index);
     let has_root = digest & 1;
     let mut next = index;
-    let mut roots = Vec::new(); // `null` in JavaScript
     let mut sibling;
 
     while digest > 0 {
       if digest == 1 && has_root > 0 {
         if self.get(next) {
-          // remote_tree.set(next); TODO
+          remote_tree.set(next);
         }
 
         let tmp = flat::sibling(next);
@@ -85,9 +94,9 @@ impl TreeIndex {
 
         flat::full_roots(flat::right_span(next) + 2, &mut roots);
 
-        for root in roots {
-          if self.get(root) {
-            // remote-tree.set(root)
+        for root in roots.into_iter() {
+          if self.get(*root) {
+            remote_tree.set(*root);
           }
         }
         break;
@@ -96,17 +105,31 @@ impl TreeIndex {
       sibling = flat::sibling(next);
       if is_even(digest) && self.get(sibling) {
         println!("sibling, {:?}", sibling);
-        // remote-tree.set(sibling)
+        remote_tree.set(sibling);
       }
 
       next = flat::parent(next);
       digest = shift_right(digest);
     }
 
-    Some(Proof {
-      nodes,
-      verified_by: 0,
-    })
+    while !remote_tree.get(next) {
+      sibling = flat::sibling(next);
+      if !self.get(sibling) {
+        let verified_by = self.verified_by(next).node;
+        Self::add_full_roots(
+          verified_by,
+          &mut nodes,
+          next,
+          &mut remote_tree,
+          &mut roots,
+        );
+        return Some(verified_by);
+      } else if !remote_tree.get(sibling) {
+        nodes.push(sibling);
+      }
+    }
+
+    Some(0)
   }
 
   /// Create a digest for data at index.
@@ -224,6 +247,23 @@ impl TreeIndex {
 
     Verification { node, top }
   }
+
+  // Add all roots to a vector of nodes.
+  #[inline]
+  fn add_full_roots(
+    verified_by: usize,
+    nodes: &mut Vec<usize>,
+    root: usize,
+    remote_tree: &mut Self,
+    roots: &mut Vec<usize>,
+  ) {
+    flat::full_roots(verified_by, roots);
+    for tree_root in roots.iter() {
+      if *tree_root != root && !remote_tree.get(*tree_root) {
+        nodes.push(*tree_root);
+      }
+    }
+  }
 }
 
 /// Create a TreeIndex with an empty sparse_bitfield instance with a page size
@@ -247,7 +287,10 @@ fn is_even(n: usize) -> bool {
   match n & 1 {
     0 => true,
     1 => false,
-    _ => panic!("Bitshift failure"),
+    _ => panic!(format!(
+      "Bitshift failure. Received bit {}. Expected 1 or 0",
+      n
+    )),
   }
 }
 

@@ -1,7 +1,7 @@
 #![feature(iterator_step_by)]
 
 extern crate tree_index as tree;
-use tree::{Change, TreeIndex};
+use tree::{Change, TreeIndex, Verification};
 
 #[test]
 fn set_and_get() {
@@ -72,6 +72,54 @@ fn digest() {
     index.digest(1),
     num("10"),
     "not rooted, has sibling"
+  );
+}
+
+#[test]
+fn verified_by() {
+  let mut index = TreeIndex::default();
+  assert_eq!(
+    index.verified_by(0),
+    Verification {
+      node: 0,
+      top: 0,
+    }
+  );
+
+  index.set(0);
+  assert_eq!(
+    index.verified_by(0),
+    Verification {
+      node: 2,
+      top: 0,
+    }
+  );
+
+  index.set(2);
+  assert_eq!(
+    index.verified_by(0),
+    Verification {
+      node: 4,
+      top: 4,
+    }
+  );
+
+  index.set(5);
+  assert_eq!(
+    index.verified_by(0),
+    Verification {
+      node: 8,
+      top: 8,
+    }
+  );
+
+  index.set(8);
+  assert_eq!(
+    index.verified_by(0),
+    Verification {
+      node: 10,
+      top: 8,
+    }
   );
 }
 

@@ -1,7 +1,7 @@
 #![feature(iterator_step_by)]
 
 extern crate tree_index as tree;
-use tree::{Change, Proof, TreeIndex, Verification};
+use tree::{Change, TreeIndex, Verification};
 
 #[test]
 fn set_and_get() {
@@ -115,8 +115,33 @@ fn verified_by() {
 
 #[test]
 fn proof_without_a_digest() {
-  let mut index = TreeIndex::default();
-  assert_eq!(index.proof(0), None);
+  let mut tree = TreeIndex::default();
+  let index = 0;
+  let mut nodes = vec![];
+  let mut remote_tree = TreeIndex::default();
+  let mut roots = vec![];
+  assert_eq!(
+    tree.proof(index, &mut nodes, &mut remote_tree, &mut roots),
+    None
+  );
+}
+
+#[test]
+fn digest_sanity_checks() {
+  let mut tree = TreeIndex::default();
+  tree.set(0);
+  let index = 0;
+  let mut nodes = vec![];
+  let mut remote_tree = TreeIndex::default();
+  let mut roots = vec![];
+  let digest = 999_999_999_999_999;
+  tree.proof_with_digest(
+    index,
+    &mut nodes,
+    &mut remote_tree,
+    &mut roots,
+    digest,
+  ); // Did not crash
 }
 
 fn num(input: &str) -> usize {
@@ -135,9 +160,13 @@ fn verify(tree: &mut TreeIndex, index: usize, node: usize, top: usize) {
 fn prove(
   tree: &mut TreeIndex,
   index: usize,
-  nodes: Vec<usize>,
+  mut nodes: &mut Vec<usize>,
   verified_by: usize,
 ) {
-  let proof = Proof::new(verified_by, nodes);
-  assert_eq!(tree.proof(index), Some(proof));
+  let mut remote_tree = TreeIndex::default();
+  let mut roots = vec![];
+  assert_eq!(
+    tree.proof(index, &mut nodes, &mut remote_tree, &mut roots),
+    Some(verified_by)
+  );
 }

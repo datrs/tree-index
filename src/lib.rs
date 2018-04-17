@@ -2,8 +2,8 @@
 #![cfg_attr(test, deny(warnings))]
 #![feature(external_doc)]
 #![doc(include = "../README.md")]
-#![cfg_attr(test, feature(plugin))]
-#![cfg_attr(test, plugin(clippy))]
+// #![cfg_attr(test, feature(plugin))]
+// #![cfg_attr(test, plugin(clippy))]
 
 // https://github.com/mafintosh/hypercore/blob/master/lib/tree-index.js
 
@@ -65,18 +65,18 @@ impl TreeIndex {
   // - opts.hash: always push index to nodes.
   // - nodes: proven nodes.
   // - opts.digest: not sure what digest does.
-  pub fn proof(
+  pub fn proof_with_digest(
     &mut self,
     index: usize,
     mut nodes: &mut Vec<usize>,
     mut remote_tree: &mut Self,
     mut roots: &mut Vec<usize>,
+    mut digest: usize,
   ) -> Option<usize> {
     if !self.get(index) {
       return None;
     }
 
-    let mut digest = shift_right(index);
     let has_root = digest & 1;
     let mut next = index;
     let mut sibling;
@@ -130,6 +130,18 @@ impl TreeIndex {
     }
 
     Some(0)
+  }
+
+  /// Prove a method.
+  pub fn proof(
+    &mut self,
+    index: usize,
+    nodes: &mut Vec<usize>,
+    remote_tree: &mut Self,
+    roots: &mut Vec<usize>,
+  ) -> Option<usize> {
+    let digest = shift_right(index);
+    self.proof_with_digest(index, nodes, remote_tree, roots, digest)
   }
 
   /// Create a digest for data at index.

@@ -36,12 +36,11 @@ impl TreeIndex {
   /// Set an index on the tree to `true`, and also all of the parents to the
   /// index. Walks the flat-tree upward, until it finds the upper most node.
   #[inline]
-  pub fn set(&mut self, index: usize) -> Change {
+  pub fn set(&mut self, mut index: usize) -> Change {
     if self.bitfield.set(index, true).is_unchanged() {
       return Change::Unchanged;
     }
 
-    let mut index = index;
     while self.bitfield.get(flat::sibling(index)) {
       index = flat::parent(index);
       if self.bitfield.set(index, true).is_unchanged() {

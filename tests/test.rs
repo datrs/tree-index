@@ -18,7 +18,6 @@ fn set_and_get() {
   assert_eq!(index.get(1), true, "parent of 0 and 2 is set");
 
   let mut index = TreeIndex::default();
-  // NOTE(yw): `.step_by()` is unstable.
   for i in (0..32).step_by(2) {
     index.set(i);
   }
@@ -29,8 +28,6 @@ fn set_and_get() {
 
 #[test]
 fn digest() {
-  let num = |input| usize::from_str_radix(input, 2).unwrap();
-
   let mut index;
   index = TreeIndex::default();
   assert_eq!(index.digest(0), num("0"), "has nothing");
@@ -62,6 +59,10 @@ fn digest() {
   index = TreeIndex::default();
   index.set(5);
   assert_eq!(index.digest(1), num("10"), "not rooted, has sibling");
+
+  fn num(input: &str) -> usize {
+    usize::from_str_radix(input, 2).unwrap()
+  }
 }
 
 #[test]
@@ -100,6 +101,10 @@ fn verified_by() {
   verify(&mut index, 16, 30, 28);
   verify(&mut index, 18, 30, 28);
   verify(&mut index, 17, 30, 28);
+
+  fn verify(tree: &mut TreeIndex, index: usize, node: usize, top: usize) {
+    assert_eq!(tree.verified_by(index), Verification { node, top });
+  }
 }
 
 #[test]
@@ -131,24 +136,4 @@ fn digest_sanity_checks() {
     &mut roots,
     digest,
   ); // Did not crash
-}
-
-// Shorthand function to verify a tree-index and some values.
-fn verify(tree: &mut TreeIndex, index: usize, node: usize, top: usize) {
-  assert_eq!(tree.verified_by(index), Verification { node, top });
-}
-
-// Shorthand function to prove a proof.
-fn prove(
-  tree: &mut TreeIndex,
-  index: usize,
-  mut nodes: &mut Vec<usize>,
-  verified_by: usize,
-) {
-  let mut remote_tree = TreeIndex::default();
-  let mut roots = vec![];
-  assert_eq!(
-    tree.proof(index, &mut nodes, &mut remote_tree, &mut roots),
-    Some(verified_by)
-  );
 }

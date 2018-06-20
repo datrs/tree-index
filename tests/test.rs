@@ -109,17 +109,72 @@ fn verified_by() {
 
 #[test]
 fn proof_without_a_digest() {
-  let mut tree = TreeIndex::default();
-  let index = 0;
+  let mut index = TreeIndex::default();
+
   let mut nodes = vec![];
-  let mut remote_tree = TreeIndex::default();
-  let mut roots = vec![];
-  assert_eq!(
-    tree.proof(index, &mut nodes, &mut remote_tree, &mut roots),
-    None
-  );
+  let verified_by = index.proof(0, &mut nodes, &mut TreeIndex::default());
+  assert_eq!(nodes, vec![]);
+  assert_eq!(verified_by, None);
+
+  index.set(0);
+
+  let mut nodes = vec![];
+  let verified_by = index.proof(0, &mut nodes, &mut TreeIndex::default());
+  assert_eq!(nodes, vec![]);
+  assert_eq!(verified_by, Some(2));
+
+  index.set(2);
+
+  let mut nodes = vec![];
+  let verified_by = index.proof(0, &mut nodes, &mut TreeIndex::default());
+  assert_eq!(nodes, vec![2]);
+  assert_eq!(verified_by, Some(4));
+
+  index.set(5);
+
+  let mut nodes = vec![];
+  let verified_by = index.proof(0, &mut nodes, &mut TreeIndex::default());
+  assert_eq!(nodes, vec![2, 5]);
+  assert_eq!(verified_by, Some(8));
+
+  index.set(8);
+
+  let mut nodes = vec![];
+  let verified_by = index.proof(0, &mut nodes, &mut TreeIndex::default());
+  assert_eq!(nodes, vec![2, 5, 8]);
+  assert_eq!(verified_by, Some(10));
+
+  let mut index = TreeIndex::default();
+  index.set(10);
+  index.set(8);
+  index.set(13);
+  index.set(3);
+  index.set(17);
+  let mut nodes = vec![];
+  let verified_by = index.proof(10, &mut nodes, &mut TreeIndex::default());
+  assert_eq!(nodes, vec![8, 13, 3, 17]);
+  assert_eq!(verified_by, Some(20));
+
+  let mut index = TreeIndex::default();
+  index.set(7);
+  index.set(16);
+  index.set(18);
+  index.set(21);
+  index.set(25);
+  index.set(28);
+  let mut nodes = vec![];
+  let verified_by = index.proof(16, &mut nodes, &mut TreeIndex::default());
+  assert_eq!(nodes, vec![18, 21, 7, 25, 28]);
+  assert_eq!(verified_by, Some(30));
+  let verified_by = index.proof(18, &mut nodes, &mut TreeIndex::default());
+  assert_eq!(nodes, vec![16, 21, 7, 25, 28]);
+  assert_eq!(verified_by, Some(30));
+  let verified_by = index.proof(17, &mut nodes, &mut TreeIndex::default());
+  assert_eq!(nodes, vec![21, 7, 25, 28]);
+  assert_eq!(verified_by, Some(30));
 }
 
+// Test things don't crash.
 #[test]
 fn digest_sanity_checks() {
   let mut tree = TreeIndex::default();
@@ -127,13 +182,6 @@ fn digest_sanity_checks() {
   let index = 0;
   let mut nodes = vec![];
   let mut remote_tree = TreeIndex::default();
-  let mut roots = vec![];
   let digest = 999_999_999_999_999;
-  tree.proof_with_digest(
-    index,
-    &mut nodes,
-    &mut remote_tree,
-    &mut roots,
-    digest,
-  ); // Did not crash
+  tree.proof_with_digest(index, &mut nodes, &mut remote_tree, digest);
 }

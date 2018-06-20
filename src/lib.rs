@@ -63,13 +63,13 @@ impl TreeIndex {
     index: usize,
     mut nodes: &mut Vec<usize>,
     mut remote_tree: &mut Self,
-    mut roots: &mut Vec<usize>,
     mut digest: usize,
   ) -> Option<usize> {
     if !self.get(index) {
       return None;
     }
 
+    let mut roots = vec![];
     let has_root = digest & 1;
     let mut next = index;
     let mut sibling;
@@ -132,10 +132,9 @@ impl TreeIndex {
     index: usize,
     nodes: &mut Vec<usize>,
     remote_tree: &mut Self,
-    roots: &mut Vec<usize>,
   ) -> Option<usize> {
     let digest = shift_right(index);
-    self.proof_with_digest(index, nodes, remote_tree, roots, digest)
+    self.proof_with_digest(index, nodes, remote_tree, digest)
   }
 
   /// Create a digest for data at index.

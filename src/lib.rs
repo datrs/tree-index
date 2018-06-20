@@ -42,8 +42,9 @@ impl TreeIndex {
   ///
   /// NOTE: we can probably change the bitfield.set syntax to return false to
   /// simplify this code a little.
+  #[inline]
   pub fn set(&mut self, index: usize) -> Change {
-    if let Change::Unchanged = self.bitfield.set(index, true) {
+    if self.bitfield.set(index, true).is_unchanged() {
       return Change::Unchanged;
     }
 
@@ -133,6 +134,7 @@ impl TreeIndex {
   }
 
   /// Prove a method.
+  #[inline]
   pub fn proof(
     &mut self,
     index: usize,
@@ -145,6 +147,7 @@ impl TreeIndex {
   }
 
   /// Create a digest for data at index.
+  #[inline]
   pub fn digest(&mut self, index: usize) -> usize {
     if self.get(index) {
       return 1;
@@ -183,6 +186,7 @@ impl TreeIndex {
   /// Get the position of the highest entry in the tree. Aka max.
   ///
   /// NOTE: should we rename this to `.len()` ?
+  #[inline]
   pub fn blocks(&mut self) -> usize {
     let mut top = 0;
     let mut next = 0;
@@ -205,6 +209,7 @@ impl TreeIndex {
   /// Get all root nodes.
   ///
   /// TODO: don't make this allocate, but fill a vector instead.
+  #[inline]
   pub fn roots(&mut self, roots: &mut Vec<usize>) {
     flat::full_roots(2 * self.blocks(), roots)
   }
@@ -214,6 +219,7 @@ impl TreeIndex {
   /// This is different from the Javascript implementation in that it doesn't
   /// push the `top` value into an array, but returns it instead through the
   /// `Verification` type.
+  #[inline]
   pub fn verified_by(&mut self, index: usize) -> Verification {
     let has_index = self.get(index);
     if !has_index {
@@ -260,7 +266,7 @@ impl TreeIndex {
     Verification { node, top }
   }
 
-  // Add all roots to a vector of nodes.
+  /// Add all roots to a vector of nodes.
   #[inline]
   fn add_full_roots(
     verified_by: usize,
@@ -281,6 +287,7 @@ impl TreeIndex {
 /// Create a TreeIndex with an empty sparse_bitfield instance with a page size
 /// of `1024`.
 impl Default for TreeIndex {
+  #[inline]
   fn default() -> Self {
     TreeIndex {
       bitfield: Bitfield::new(1024),
@@ -293,8 +300,8 @@ impl Default for TreeIndex {
 //   unimplemented!();
 // }
 
-#[inline]
 /// Check if a value is even.
+#[inline]
 fn is_even(n: usize) -> bool {
   match n & 1 {
     0 => true,
@@ -306,8 +313,8 @@ fn is_even(n: usize) -> bool {
   }
 }
 
-#[inline]
 /// Bitwise shift numbers one to the right. e.g. 1001 (9) becomes 0100 (4).
+#[inline]
 fn shift_right(n: usize) -> usize {
   (n - (n & 1)) / 2
 }

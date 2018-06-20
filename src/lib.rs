@@ -88,7 +88,7 @@ impl TreeIndex {
 
         flat::full_roots(flat::right_span(next) + 2, &mut roots);
 
-        for root in roots.into_iter() {
+        for root in roots.iter() {
           if self.get(*root) {
             remote_tree.set(*root);
           }

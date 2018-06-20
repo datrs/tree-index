@@ -13,9 +13,6 @@ pub struct Proof {
 impl Proof {
   /// Create a new [`Proof`] instance.
   pub fn new(verified_by: usize, nodes: Vec<usize>) -> Self {
-    Proof {
-      nodes,
-      verified_by,
-    }
+    Proof { nodes, verified_by }
   }
 }

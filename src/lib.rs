@@ -223,10 +223,7 @@ impl TreeIndex {
   pub fn verified_by(&mut self, index: usize) -> Verification {
     let has_index = self.get(index);
     if !has_index {
-      return Verification {
-        node: 0,
-        top: 0,
-      };
+      return Verification { node: 0, top: 0 };
     }
 
     // Find root of current tree.
@@ -257,11 +254,7 @@ impl TreeIndex {
       }
     }
 
-    let node = if self.get(top) {
-      top + 2
-    } else {
-      top
-    };
+    let node = if self.get(top) { top + 2 } else { top };
 
     Verification { node, top }
   }

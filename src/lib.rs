@@ -1,11 +1,7 @@
 #![deny(missing_docs)]
-#![cfg_attr(test, deny(warnings))]
 #![feature(external_doc)]
 #![doc(include = "../README.md")]
-// #![cfg_attr(test, feature(plugin))]
-// #![cfg_attr(test, plugin(clippy))]
-
-// https://github.com/mafintosh/hypercore/blob/master/lib/tree-index.js
+#![cfg_attr(test, deny(warnings))]
 
 extern crate flat_tree as flat;
 extern crate sparse_bitfield as bitfield;
@@ -26,11 +22,13 @@ pub struct TreeIndex {
 
 impl TreeIndex {
   /// Create a new TreeIndex by passing it a sparse_bitfield instance.
+  #[inline]
   pub fn new(bitfield: Bitfield) -> Self {
     TreeIndex { bitfield }
   }
 
   /// Get a bit from the bitfield.
+  #[inline]
   pub fn get(&mut self, index: usize) -> bool {
     self.bitfield.get(index)
   }
@@ -46,7 +44,7 @@ impl TreeIndex {
     let mut index = index;
     while self.bitfield.get(flat::sibling(index)) {
       index = flat::parent(index);
-      if let Change::Unchanged = self.bitfield.set(index, true) {
+      if self.bitfield.set(index, true).is_unchanged() {
         break;
       }
     }

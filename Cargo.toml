@@ -10,4 +10,4 @@ readme = "README.md"
 
 [dependencies]
 flat-tree = "3.3.0"
-sparse-bitfield = "0.5.0"
+sparse-bitfield = "0.7.0"

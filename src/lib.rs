@@ -36,12 +36,7 @@ impl TreeIndex {
   }
 
   /// Set an index on the tree to `true`, and also all of the parents to the
-  /// index. Walks the tree upward.
-  ///
-  /// Returns a "Change" member to indicate if the underlying value was changed.
-  ///
-  /// NOTE: we can probably change the bitfield.set syntax to return false to
-  /// simplify this code a little.
+  /// index. Walks the flat-tree upward, until it finds the upper most node.
   #[inline]
   pub fn set(&mut self, index: usize) -> Change {
     if self.bitfield.set(index, true).is_unchanged() {

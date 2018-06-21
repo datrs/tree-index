@@ -125,13 +125,13 @@ fn proof_without_a_digest_1() {
     assert_eq!(proof.verified_by(), 2);
   }
 
-  // {
-  //   index.set(2);
-  //   let mut nodes = vec![];
-  //   let proof = index.proof(0, &mut nodes, &mut TreeIndex::default()).unwrap();
-  //   assert_eq!(proof.nodes(), vec![2].as_slice());
-  //   assert_eq!(proof.verified_by(), 4);
-  // }
+  {
+    index.set(2);
+    let mut nodes = vec![];
+    let proof = index.proof(0, &mut nodes, &mut TreeIndex::default()).unwrap();
+    assert_eq!(proof.nodes(), vec![2].as_slice());
+    assert_eq!(proof.verified_by(), 4);
+  }
 
   {
     index.set(5);

@@ -121,6 +121,8 @@ impl TreeIndex {
       } else if !remote_tree.get(sibling) {
         nodes.push(sibling);
       }
+
+      next = flat::parent(next);
     }
 
     let verified_by = 0;

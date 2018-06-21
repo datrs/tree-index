@@ -3,6 +3,7 @@
 /// Merkle trees are proven by checking the parent hashes.
 #[derive(Debug, PartialEq)]
 pub struct Proof<'a> {
+  index: usize,
   verified_by: usize,
   nodes: &'a [usize],
 }
@@ -15,11 +16,26 @@ impl <'a>Proof<'a> {
   /// # extern crate tree_index;
   /// # use tree_index::Proof;
   /// let nodes = vec![];
-  /// let _proof = Proof::new(0, &nodes);
+  /// let _proof = Proof::new(0, 0, &nodes);
   /// ```
   #[inline]
-  pub fn new(verified_by: usize, nodes: &'a [usize]) -> Self {
-    Self { nodes, verified_by }
+  pub fn new(index: usize, verified_by: usize, nodes: &'a [usize]) -> Self {
+    Self { index, nodes, verified_by }
+  }
+
+  /// Get the index which was used to verify this node.
+  ///
+  /// ## Examples
+  /// ```rust
+  /// # extern crate tree_index;
+  /// # use tree_index::Proof;
+  /// let nodes = vec![];
+  /// let proof = Proof::new(0, 0, &nodes);
+  /// assert_eq!(proof.index(), 0);
+  /// ```
+  #[inline]
+  pub fn index(&self) -> usize {
+    self.index
   }
 
   /// Get the index for the node which verifies the input index.
@@ -29,7 +45,7 @@ impl <'a>Proof<'a> {
   /// # extern crate tree_index;
   /// # use tree_index::Proof;
   /// let nodes = vec![];
-  /// let proof = Proof::new(0, &nodes);
+  /// let proof = Proof::new(0, 0, &nodes);
   /// assert_eq!(proof.verified_by(), 0);
   /// ```
   #[inline]
@@ -44,11 +60,11 @@ impl <'a>Proof<'a> {
   /// # extern crate tree_index;
   /// # use tree_index::Proof;
   /// let nodes = vec![];
-  /// let proof = Proof::new(0, &nodes);
-  /// assert_eq!(proof.nodes.to_owned(), vec![]);
+  /// let proof = Proof::new(0, 0, &nodes);
+  /// assert_eq!(proof.nodes().len(), 0);
   /// ```
   #[inline]
-  pub fn nodes(&self) -> &[usize] {
-    &self.nodes
-  }
+   pub fn nodes(&self) -> &[usize] {
+     &self.nodes
+   }
 }

@@ -58,20 +58,19 @@ impl TreeIndex {
   // - opts.hash: always push index to nodes.
   // - nodes: proven nodes.
   // - opts.digest: not sure what digest does.
-  pub fn proof_with_digest(
-    &mut self,
+  pub fn proof_with_digest<'a>(
+    &'a mut self,
     index: usize,
-    nodes: &mut impl convert::AsMut<Vec<usize>>,
+    nodes: &'a mut impl convert::AsMut<Vec<usize>>,
     mut remote_tree: &mut Self,
     mut digest: usize,
-  ) -> Option<usize> {
+  ) -> Option<Proof> {
     if !self.get(index) {
       return None;
     }
 
     let mut nodes = nodes.as_mut();
-
-    let mut roots = vec![];
+    let mut roots = vec![]; // TODO: reuse from a buffer pool.
     let has_root = digest & 1;
     let mut next = index;
     let mut sibling;
@@ -118,23 +117,24 @@ impl TreeIndex {
           &mut remote_tree,
           &mut roots,
         );
-        return Some(verified_by);
+        return Some(Proof::new(index, verified_by, nodes));
       } else if !remote_tree.get(sibling) {
         nodes.push(sibling);
       }
     }
 
-    Some(0)
+    let verified_by = 0;
+    Some(Proof::new(index, verified_by, nodes))
   }
 
   /// Prove a method.
   #[inline]
-  pub fn proof(
-    &mut self,
+  pub fn proof<'a>(
+    &'a mut self,
     index: usize,
-    nodes: &mut Vec<usize>,
+    nodes: &'a mut impl convert::AsMut<Vec<usize>>,
     remote_tree: &mut Self,
-  ) -> Option<usize> {
+  ) -> Option<Proof> {
     let digest = shift_right(index);
     self.proof_with_digest(index, nodes, remote_tree, digest)
   }

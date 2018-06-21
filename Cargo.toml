@@ -1,6 +1,6 @@
 [package]
 name = "tree-index"
-version = "0.3.0"
+version = "0.3.1-alpha.0"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/datrs/tree-index"
 documentation = "https://docs.rs/tree-index"

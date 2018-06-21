@@ -13,7 +13,7 @@ pub use self::bitfield::{Bitfield, Change};
 pub use self::proof::Proof;
 pub use self::verification::Verification;
 
-use std::cmp;
+use std::{cmp, convert};
 
 /// Index a tree structure or something.
 pub struct TreeIndex {
@@ -61,13 +61,15 @@ impl TreeIndex {
   pub fn proof_with_digest(
     &mut self,
     index: usize,
-    mut nodes: &mut Vec<usize>,
+    nodes: &mut impl convert::AsMut<Vec<usize>>,
     mut remote_tree: &mut Self,
     mut digest: usize,
   ) -> Option<usize> {
     if !self.get(index) {
       return None;
     }
+
+    let mut nodes = nodes.as_mut();
 
     let mut roots = vec![];
     let has_root = digest & 1;

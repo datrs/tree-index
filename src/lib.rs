@@ -62,14 +62,14 @@ impl TreeIndex {
     &'a mut self,
     index: usize,
     nodes: &'a mut impl convert::AsMut<Vec<usize>>,
-    mut remote_tree: &mut Self,
+    remote_tree: &mut Self,
     mut digest: usize,
   ) -> Option<Proof> {
     if !self.get(index) {
       return None;
     }
 
-    let mut nodes = nodes.as_mut();
+    let nodes = nodes.as_mut();
     let mut roots = vec![]; // TODO: reuse from a buffer pool.
     let has_root = digest & 1;
     let mut next = index;
@@ -98,7 +98,6 @@ impl TreeIndex {
 
       sibling = flat::sibling(next);
       if is_even(digest) && self.get(sibling) {
-        println!("sibling, {:?}", sibling);
         remote_tree.set(sibling);
       }
 
@@ -108,15 +107,15 @@ impl TreeIndex {
 
     while !remote_tree.get(next) {
       sibling = flat::sibling(next);
+
       if !self.get(sibling) {
         let verified_by = self.verified_by(next).node;
-        Self::add_full_roots(
-          verified_by,
-          &mut nodes,
-          next,
-          &mut remote_tree,
-          &mut roots,
-        );
+        flat::full_roots(verified_by, &mut roots);
+        for root in roots {
+          if root != next && !remote_tree.get(root) {
+            nodes.push(root);
+          }
+        }
         return Some(Proof::new(index, verified_by, nodes));
       } else if !remote_tree.get(sibling) {
         nodes.push(sibling);
@@ -253,23 +252,6 @@ impl TreeIndex {
 
     Verification { node, top }
   }
-
-  /// Add all roots to a vector of nodes.
-  #[inline]
-  fn add_full_roots(
-    verified_by: usize,
-    nodes: &mut Vec<usize>,
-    root: usize,
-    remote_tree: &mut Self,
-    roots: &mut Vec<usize>,
-  ) {
-    flat::full_roots(verified_by, roots);
-    for tree_root in roots.iter() {
-      if *tree_root != root && !remote_tree.get(*tree_root) {
-        nodes.push(*tree_root);
-      }
-    }
-  }
 }
 
 /// Create a TreeIndex with an empty sparse_bitfield instance with a page size
@@ -282,11 +264,6 @@ impl Default for TreeIndex {
     }
   }
 }
-
-// /// Do stuff with full roots.
-// fn add_full_roots() {
-//   unimplemented!();
-// }
 
 /// Check if a value is even.
 #[inline]

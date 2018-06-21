@@ -120,7 +120,9 @@ fn proof_without_a_digest_1() {
   {
     index.set(0);
     let mut nodes = vec![];
-    let proof = index.proof(0, &mut nodes, &mut TreeIndex::default()).unwrap();
+    let proof = index
+      .proof(0, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
     assert_eq!(proof.nodes(), vec![].as_slice());
     assert_eq!(proof.verified_by(), 2);
   }
@@ -128,7 +130,9 @@ fn proof_without_a_digest_1() {
   {
     index.set(2);
     let mut nodes = vec![];
-    let proof = index.proof(0, &mut nodes, &mut TreeIndex::default()).unwrap();
+    let proof = index
+      .proof(0, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
     assert_eq!(proof.nodes(), vec![2].as_slice());
     assert_eq!(proof.verified_by(), 4);
   }
@@ -136,7 +140,9 @@ fn proof_without_a_digest_1() {
   {
     index.set(5);
     let mut nodes = vec![];
-    let proof = index.proof(0, &mut nodes, &mut TreeIndex::default()).unwrap();
+    let proof = index
+      .proof(0, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
     assert_eq!(proof.nodes(), vec![2, 5].as_slice());
     assert_eq!(proof.verified_by(), 8);
   }
@@ -144,7 +150,9 @@ fn proof_without_a_digest_1() {
   {
     index.set(8);
     let mut nodes = vec![];
-    let proof = index.proof(0, &mut nodes, &mut TreeIndex::default()).unwrap();
+    let proof = index
+      .proof(0, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
     assert_eq!(proof.nodes(), vec![2, 5, 8].as_slice());
     assert_eq!(proof.verified_by(), 10);
   }
@@ -159,13 +167,15 @@ fn proof_without_a_digest_2() {
   index.set(3);
   index.set(17);
   let mut nodes = vec![];
-  let proof = index.proof(10, &mut nodes, &mut TreeIndex::default()).unwrap();
+  let proof = index
+    .proof(10, &mut nodes, &mut TreeIndex::default())
+    .unwrap();
   assert_eq!(proof.nodes(), vec![8, 13, 3, 17].as_slice());
   assert_eq!(proof.verified_by(), 20);
 }
 
 #[test]
-fn proof_without_a_digest_3 () {
+fn proof_without_a_digest_3() {
   let mut index = TreeIndex::default();
   index.set(7);
   index.set(16);
@@ -176,19 +186,25 @@ fn proof_without_a_digest_3 () {
 
   {
     let mut nodes = vec![];
-    let proof = index.proof(16, &mut nodes, &mut TreeIndex::default()).unwrap();
+    let proof = index
+      .proof(16, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
     assert_eq!(proof.nodes(), vec![18, 21, 7, 25, 28].as_slice());
     assert_eq!(proof.verified_by(), 30);
   }
   {
     let mut nodes = vec![];
-    let proof = index.proof(18, &mut nodes, &mut TreeIndex::default()).unwrap();
+    let proof = index
+      .proof(18, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
     assert_eq!(proof.nodes(), vec![16, 21, 7, 25, 28].as_slice());
     assert_eq!(proof.verified_by(), 30);
   }
   {
     let mut nodes = vec![];
-    let proof = index.proof(17, &mut nodes, &mut TreeIndex::default()).unwrap();
+    let proof = index
+      .proof(17, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
     assert_eq!(proof.nodes(), vec![21, 7, 25, 28].as_slice());
     assert_eq!(proof.verified_by(), 30);
   }

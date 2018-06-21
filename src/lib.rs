@@ -16,6 +16,7 @@ pub use self::verification::Verification;
 use std::{cmp, convert};
 
 /// Index a tree structure or something.
+#[derive(Debug)]
 pub struct TreeIndex {
   bitfield: Bitfield,
 }
@@ -50,6 +51,18 @@ impl TreeIndex {
     Change::Changed
   }
 
+  /// Prove a method.
+  #[inline]
+  pub fn proof<'a>(
+    &'a mut self,
+    index: usize,
+    nodes: &'a mut impl convert::AsMut<Vec<usize>>,
+    remote_tree: &mut Self,
+  ) -> Option<Proof> {
+    let digest = 0;
+    self.proof_with_digest(index, nodes, remote_tree, digest)
+  }
+
   /// Determine which Nodes prove the correctness for the Node at `index`.
   ///
   /// The passed buffer is filled with nodes that are verified by the same
@@ -65,15 +78,17 @@ impl TreeIndex {
     remote_tree: &mut Self,
     mut digest: usize,
   ) -> Option<Proof> {
+    let nodes = nodes.as_mut();
+
     if !self.get(index) {
       return None;
     }
 
-    let nodes = nodes.as_mut();
     let mut roots = vec![]; // TODO: reuse from a buffer pool.
-    let has_root = digest & 1;
     let mut next = index;
     let mut sibling;
+    let has_root = digest & 1;
+    digest = shift_right(digest);
 
     while digest > 0 {
       if digest == 1 && has_root > 0 {
@@ -126,18 +141,6 @@ impl TreeIndex {
 
     let verified_by = 0;
     Some(Proof::new(index, verified_by, nodes))
-  }
-
-  /// Prove a method.
-  #[inline]
-  pub fn proof<'a>(
-    &'a mut self,
-    index: usize,
-    nodes: &'a mut impl convert::AsMut<Vec<usize>>,
-    remote_tree: &mut Self,
-  ) -> Option<Proof> {
-    let digest = shift_right(index);
-    self.proof_with_digest(index, nodes, remote_tree, digest)
   }
 
   /// Create a digest for data at index.
@@ -286,6 +289,7 @@ fn shift_right(n: usize) -> usize {
 
 #[test]
 fn shifts_bits_right() {
+  assert_eq!(shift_right(0), 0);
   assert_eq!(shift_right(9), 4);
   assert_eq!(shift_right(12), 6);
   assert_eq!(shift_right(13), 6);

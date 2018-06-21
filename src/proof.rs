@@ -8,7 +8,7 @@ pub struct Proof<'a> {
   nodes: &'a [usize],
 }
 
-impl <'a>Proof<'a> {
+impl<'a> Proof<'a> {
   /// Create a new instance.
   ///
   /// ## Examples
@@ -20,7 +20,11 @@ impl <'a>Proof<'a> {
   /// ```
   #[inline]
   pub fn new(index: usize, verified_by: usize, nodes: &'a [usize]) -> Self {
-    Self { index, nodes, verified_by }
+    Self {
+      index,
+      nodes,
+      verified_by,
+    }
   }
 
   /// Get the index which was used to verify this node.
@@ -64,7 +68,7 @@ impl <'a>Proof<'a> {
   /// assert_eq!(proof.nodes().len(), 0);
   /// ```
   #[inline]
-   pub fn nodes(&self) -> &[usize] {
-     &self.nodes
-   }
+  pub fn nodes(&self) -> &[usize] {
+    &self.nodes
+  }
 }

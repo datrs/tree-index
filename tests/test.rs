@@ -30,39 +30,35 @@ fn set_and_get() {
 fn digest() {
   let mut index;
   index = TreeIndex::default();
-  assert_eq!(index.digest(0), num("0"), "has nothing");
+  assert_eq!(index.digest(0), 0b0, "has nothing");
 
   index = TreeIndex::default();
   index.set(0);
-  assert_eq!(index.digest(0), num("1"), "has all");
+  assert_eq!(index.digest(0), 0b1, "has all");
 
   index = TreeIndex::default();
   index.set(1);
-  assert_eq!(index.digest(0), num("101"), "rooted, no sibling, no parent");
+  assert_eq!(index.digest(0), 0b101, "rooted, no sibling, no parent");
 
   index = TreeIndex::default();
   index.set(2);
-  assert_eq!(index.digest(0), num("10"), "not rooted, has sibling");
+  assert_eq!(index.digest(0), 0b10, "not rooted, has sibling");
 
   index = TreeIndex::default();
   index.set(1);
   index.set(2);
-  assert_eq!(index.digest(0), num("1"), "has all");
+  assert_eq!(index.digest(0), 0b1, "has all");
 
   index = TreeIndex::default();
   index.set(3);
   index.set(2);
   let left = index.digest(0);
-  let right = num("1011");
+  let right = 0b1011;
   assert_eq!(left, right, "rooted, sibling, no uncle, grand parents");
 
   index = TreeIndex::default();
   index.set(5);
-  assert_eq!(index.digest(1), num("10"), "not rooted, has sibling");
-
-  fn num(input: &str) -> usize {
-    usize::from_str_radix(input, 2).unwrap()
-  }
+  assert_eq!(index.digest(1), 0b10, "not rooted, has sibling");
 }
 
 #[test]
@@ -210,6 +206,67 @@ fn proof_without_a_digest_3() {
   }
 }
 
+#[test]
+fn proof_with_a_digest_1() {
+  let mut index = TreeIndex::default();
+  {
+    let mut nodes = vec![];
+    let proof = index.proof(0, &mut nodes, &mut TreeIndex::default());
+    assert!(proof.is_none());
+  }
+
+  index.set(0);
+  index.set(2);
+
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(0, 1, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
+    assert_eq!(proof.nodes(), vec![].as_slice());
+    assert_eq!(proof.verified_by(), 0);
+  }
+
+  index.set(5);
+
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(0, 0b10, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
+    assert_eq!(proof.nodes(), vec![].as_slice());
+    assert_eq!(proof.verified_by(), 0);
+  }
+
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(0, 0b110, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
+    assert_eq!(proof.nodes(), vec![].as_slice());
+    assert_eq!(proof.verified_by(), 0);
+  }
+
+  index.set(8);
+
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(0, 0b101, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
+    assert_eq!(proof.nodes(), vec![].as_slice());
+    assert_eq!(proof.verified_by(), 0);
+  }
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(0, 0b10, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
+    assert_eq!(proof.nodes(), vec![].as_slice());
+    assert_eq!(proof.verified_by(), 0);
+  }
+}
+
 // Test things don't crash.
 #[test]
 fn digest_sanity_checks() {
@@ -219,5 +276,5 @@ fn digest_sanity_checks() {
   let mut nodes = vec![];
   let mut remote_tree = TreeIndex::default();
   let digest = 999_999_999_999_999;
-  tree.proof_with_digest(index, &mut nodes, &mut remote_tree, digest);
+  tree.proof_with_digest(index, digest, &mut nodes, &mut remote_tree);
 }

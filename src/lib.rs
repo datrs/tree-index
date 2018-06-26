@@ -60,7 +60,7 @@ impl TreeIndex {
     remote_tree: &mut Self,
   ) -> Option<Proof> {
     let digest = 0;
-    self.proof_with_digest(index, nodes, remote_tree, digest)
+    self.proof_with_digest(index, digest, nodes, remote_tree)
   }
 
   /// Determine which Nodes prove the correctness for the Node at `index`.
@@ -74,9 +74,9 @@ impl TreeIndex {
   pub fn proof_with_digest<'a>(
     &'a mut self,
     index: usize,
+    mut digest: usize,
     nodes: &'a mut impl convert::AsMut<Vec<usize>>,
     remote_tree: &mut Self,
-    mut digest: usize,
   ) -> Option<Proof> {
     let nodes = nodes.as_mut();
 

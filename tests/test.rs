@@ -234,8 +234,8 @@ fn proof_with_a_digest_1() {
     let proof = index
       .proof_with_digest(0, 0b10, &mut nodes, &mut TreeIndex::default())
       .unwrap();
-    assert_eq!(proof.nodes(), vec![].as_slice());
-    assert_eq!(proof.verified_by(), 0);
+    assert_eq!(proof.nodes(), vec![5].as_slice());
+    assert_eq!(proof.verified_by(), 8);
   }
 
   {
@@ -244,7 +244,7 @@ fn proof_with_a_digest_1() {
       .proof_with_digest(0, 0b110, &mut nodes, &mut TreeIndex::default())
       .unwrap();
     assert_eq!(proof.nodes(), vec![].as_slice());
-    assert_eq!(proof.verified_by(), 0);
+    assert_eq!(proof.verified_by(), 8);
   }
 
   index.set(8);
@@ -254,7 +254,7 @@ fn proof_with_a_digest_1() {
     let proof = index
       .proof_with_digest(0, 0b101, &mut nodes, &mut TreeIndex::default())
       .unwrap();
-    assert_eq!(proof.nodes(), vec![].as_slice());
+    assert_eq!(proof.nodes(), vec![2].as_slice());
     assert_eq!(proof.verified_by(), 0);
   }
   {
@@ -262,7 +262,92 @@ fn proof_with_a_digest_1() {
     let proof = index
       .proof_with_digest(0, 0b10, &mut nodes, &mut TreeIndex::default())
       .unwrap();
+    assert_eq!(proof.nodes(), vec![5, 8].as_slice());
+    assert_eq!(proof.verified_by(), 10);
+  }
+}
+
+#[test]
+fn proof_with_a_digest_2() {
+  let mut index = TreeIndex::default();
+  index.set(10);
+  index.set(8);
+  index.set(13);
+  index.set(3);
+  index.set(17);
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(10, 0b1000001, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
+    assert_eq!(proof.nodes(), vec![8, 13, 3, 17].as_slice());
+    assert_eq!(proof.verified_by(), 20);
+  }
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(10, 0b10001, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
+    assert_eq!(proof.nodes(), vec![8, 13, 3].as_slice());
+    assert_eq!(proof.verified_by(), 0);
+  }
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(10, 0b1001, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
+    assert_eq!(proof.nodes(), vec![8, 13].as_slice());
+    assert_eq!(proof.verified_by(), 0);
+  }
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(0, 0b1000, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
+    assert_eq!(proof.nodes(), vec![8, 13, 17].as_slice());
+    assert_eq!(proof.verified_by(), 20);
+  }
+}
+
+#[test]
+fn proof_with_a_digest_3() {
+  let mut index = TreeIndex::default();
+  index.set(7);
+  index.set(16);
+  index.set(18);
+  index.set(21);
+  index.set(25);
+  index.set(28);
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(16, 0b1, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
     assert_eq!(proof.nodes(), vec![].as_slice());
+    assert_eq!(proof.verified_by(), 0);
+  }
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(18, 0b100, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
+    assert_eq!(proof.nodes(), vec![16, 7, 25, 28].as_slice());
+    assert_eq!(proof.verified_by(), 30);
+  }
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(10, 0b10, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
+    assert_eq!(proof.nodes(), vec![21, 7, 25, 28].as_slice());
+    assert_eq!(proof.verified_by(), 30);
+  }
+  {
+    let mut nodes = vec![];
+    let proof = index
+      .proof_with_digest(0, 0b101, &mut nodes, &mut TreeIndex::default())
+      .unwrap();
+    assert_eq!(proof.nodes(), vec![21].as_slice());
     assert_eq!(proof.verified_by(), 0);
   }
 }

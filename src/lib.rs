@@ -104,14 +104,14 @@ impl TreeIndex {
     digest = shift_right(digest);
 
     while digest > 0 {
-      if digest == 1 && has_root > 0 {
+      if digest == 1 && has_root != 0 {
         if self.get(next) {
           remote_tree.set(next);
         }
 
-        let tmp = flat::sibling(next);
-        if tmp > next {
-          next = tmp
+        let next_sibling = flat::sibling(next);
+        if next_sibling < next {
+          next = next_sibling
         }
 
         flat::full_roots(flat::right_span(next) + 2, &mut roots);
@@ -135,27 +135,22 @@ impl TreeIndex {
 
     next = index;
 
-    println!("next {}", next);
     while !remote_tree.get(next) {
       sibling = flat::sibling(next);
-      println!("new sibling {}", sibling);
 
       if !self.get(sibling) {
         let verified_by = self.verified_by(next).node;
+        let mut roots = vec![];
         flat::full_roots(verified_by, &mut roots);
         for root in roots {
           if root != next && !remote_tree.get(root) {
-            println!("1");
             nodes.push(root);
           }
         }
         return Some(Proof::new(index, verified_by, nodes));
       } else if !remote_tree.get(sibling) {
-        println!("2");
         nodes.push(sibling);
       }
-      println!("sibling {} {}", sibling, remote_tree.get(sibling));
-      println!("3");
 
       next = flat::parent(next);
     }

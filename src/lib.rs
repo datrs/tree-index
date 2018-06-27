@@ -56,11 +56,12 @@ impl TreeIndex {
   pub fn proof<'a>(
     &'a mut self,
     index: usize,
+    include_hash: bool,
     nodes: &'a mut impl convert::AsMut<Vec<usize>>,
     remote_tree: &mut Self,
   ) -> Option<Proof> {
     let digest = 0;
-    self.proof_with_digest(index, digest, nodes, remote_tree)
+    self.proof_with_digest(index, digest, include_hash, nodes, remote_tree)
   }
 
   /// Determine which Nodes prove the correctness for the Node at `index`.
@@ -75,6 +76,7 @@ impl TreeIndex {
     &'a mut self,
     index: usize,
     mut digest: usize,
+    include_hash: bool,
     nodes: &'a mut impl convert::AsMut<Vec<usize>>,
     remote_tree: &mut Self,
   ) -> Option<Proof> {
@@ -82,6 +84,17 @@ impl TreeIndex {
 
     if !self.get(index) {
       return None;
+    }
+
+    // Always return hash - no matter what the digest says.
+    // NOTE: this feels like a mild hack.
+    if include_hash {
+      nodes.push(index);
+    }
+
+    if digest == 1 {
+      let verified_by = 0;
+      return Some(Proof::new(index, verified_by, nodes));
     }
 
     let mut roots = vec![]; // TODO: reuse from a buffer pool.
@@ -112,7 +125,7 @@ impl TreeIndex {
       }
 
       sibling = flat::sibling(next);
-      if is_even(digest) && self.get(sibling) {
+      if !is_even(digest) && self.get(sibling) {
         remote_tree.set(sibling);
       }
 
@@ -120,21 +133,29 @@ impl TreeIndex {
       digest = shift_right(digest);
     }
 
+    next = index;
+
+    println!("next {}", next);
     while !remote_tree.get(next) {
       sibling = flat::sibling(next);
+      println!("new sibling {}", sibling);
 
       if !self.get(sibling) {
         let verified_by = self.verified_by(next).node;
         flat::full_roots(verified_by, &mut roots);
         for root in roots {
           if root != next && !remote_tree.get(root) {
+            println!("1");
             nodes.push(root);
           }
         }
         return Some(Proof::new(index, verified_by, nodes));
       } else if !remote_tree.get(sibling) {
+        println!("2");
         nodes.push(sibling);
       }
+      println!("sibling {} {}", sibling, remote_tree.get(sibling));
+      println!("3");
 
       next = flat::parent(next);
     }

@@ -120,7 +120,7 @@ impl TreeIndex {
 
         flat::full_roots(flat::right_span(next) + 2, &mut roots);
 
-        for root in roots.iter() {
+        for root in &roots {
           if self.get(*root) {
             remote_tree.set(*root);
           }

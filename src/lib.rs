@@ -44,9 +44,13 @@ impl TreeIndex {
 
     while self.bitfield.get(flat::sibling(index)) {
       index = flat::parent(index);
-      if self.bitfield.set(index, true).is_unchanged() {
-        break;
-      }
+      let r = self.bitfield.set(index, true);
+      assert_eq!(
+        r,
+        Change::Changed,
+        "Parent should not be set (parent index: {})",
+        index
+      );
     }
     Change::Changed
   }

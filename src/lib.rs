@@ -101,7 +101,7 @@ impl TreeIndex {
     let mut next = index;
     let mut sibling;
     let has_root = digest & 1;
-    digest = digest >> 1;
+    digest = shift_right(digest);
 
     while digest > 0 {
       if digest == 1 && has_root != 0 {
@@ -130,7 +130,7 @@ impl TreeIndex {
       }
 
       next = flat::parent(next);
-      digest = digest >> 1;
+      digest = shift_right(digest);
     }
 
     next = index;
@@ -295,4 +295,19 @@ fn is_even(n: usize) -> bool {
       n
     )),
   }
+}
+
+/// Bitwise shift numbers one to the right. e.g. 1001 (9) becomes 0100 (4).
+#[inline]
+fn shift_right(n: usize) -> usize {
+  (n - (n & 1)) / 2
+}
+
+#[test]
+fn shifts_bits_right() {
+  assert_eq!(shift_right(0), 0);
+  assert_eq!(shift_right(9), 4);
+  assert_eq!(shift_right(12), 6);
+  assert_eq!(shift_right(13), 6);
+  assert_eq!(shift_right(14), 7);
 }

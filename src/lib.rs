@@ -200,13 +200,16 @@ impl TreeIndex {
   ///
   /// NOTE: should we rename this to `.len()` ?
   /// ## Examples
-  /// ```
+  /// ```readme
   ///        3
   ///    1       5
   ///  0   2   4   6  
   /// ```
   ///
   /// ```rust
+  /// extern crate tree_index as tree;
+  /// use tree::{Change, TreeIndex, Verification};
+  ///
   /// let mut tree = TreeIndex::default();
   /// for i in (0..8).step_by(2) {
   ///   tree.set(i);

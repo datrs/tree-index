@@ -200,7 +200,7 @@ impl TreeIndex {
   ///
   /// NOTE: should we rename this to `.len()` ?
   /// ## Examples
-  /// ```readme
+  /// ```txt
   ///        3
   ///    1       5
   ///  0   2   4   6  

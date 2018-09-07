@@ -199,6 +199,30 @@ impl TreeIndex {
   /// Get the position of the highest entry in the tree. Aka max.
   ///
   /// NOTE: should we rename this to `.len()` ?
+  /// ## Examples
+  /// ```txt
+  ///        3
+  ///    1       5
+  ///  0   2   4   6  
+  /// ```
+  ///
+  /// ```rust
+  /// extern crate tree_index as tree;
+  /// use tree::{Change, TreeIndex, Verification};
+  ///
+  /// let mut tree = TreeIndex::default();
+  /// for i in (0..8).step_by(2) {
+  ///   tree.set(i);
+  /// }
+  /// assert_eq!(tree.blocks(), 4);
+  /// tree = TreeIndex::default();
+  /// tree.set(1);
+  /// tree.set(5);
+  /// assert_eq!(tree.blocks(), 4);
+  /// tree = TreeIndex::default();
+  /// tree.set(3);
+  /// assert_eq!(tree.blocks(), 4); 
+  /// ```
   #[inline]
   pub fn blocks(&mut self) -> usize {
     let mut top = 0;

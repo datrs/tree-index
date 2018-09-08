@@ -1,5 +1,3 @@
-#![feature(iterator_step_by)]
-
 extern crate tree_index as tree;
 use tree::{Change, TreeIndex, Verification};
 

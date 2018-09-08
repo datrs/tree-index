@@ -101,7 +101,7 @@ impl TreeIndex {
     let mut next = index;
     let mut sibling;
     let has_root = digest & 1;
-    digest = digest >> 1;
+    digest >>= 1;
 
     while digest > 0 {
       if digest == 1 && has_root != 0 {
@@ -130,7 +130,7 @@ impl TreeIndex {
       }
 
       next = flat::parent(next);
-      digest = digest >> 1;
+      digest >>= 1;
     }
 
     next = index;

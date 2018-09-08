@@ -221,7 +221,7 @@ impl TreeIndex {
   /// assert_eq!(tree.blocks(), 4);
   /// tree = TreeIndex::default();
   /// tree.set(3);
-  /// assert_eq!(tree.blocks(), 4); 
+  /// assert_eq!(tree.blocks(), 4);
   /// ```
   #[inline]
   pub fn blocks(&mut self) -> usize {

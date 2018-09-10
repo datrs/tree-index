@@ -1,5 +1,3 @@
-#![feature(iterator_step_by)]
-
 extern crate tree_index as tree;
 use tree::{Change, TreeIndex, Verification};
 
@@ -284,8 +282,7 @@ fn proof_with_a_digest_2() {
         false,
         &mut nodes,
         &mut TreeIndex::default(),
-      )
-      .unwrap();
+      ).unwrap();
     assert_eq!(proof.nodes(), vec![8, 13, 3, 17].as_slice());
     assert_eq!(proof.verified_by(), 20);
   }
@@ -298,8 +295,7 @@ fn proof_with_a_digest_2() {
         false,
         &mut nodes,
         &mut TreeIndex::default(),
-      )
-      .unwrap();
+      ).unwrap();
     assert_eq!(proof.nodes(), vec![8, 13, 3].as_slice());
     assert_eq!(proof.verified_by(), 0);
   }
@@ -312,8 +308,7 @@ fn proof_with_a_digest_2() {
         false,
         &mut nodes,
         &mut TreeIndex::default(),
-      )
-      .unwrap();
+      ).unwrap();
     assert_eq!(proof.nodes(), vec![8, 13].as_slice());
     assert_eq!(proof.verified_by(), 0);
   }
@@ -326,8 +321,7 @@ fn proof_with_a_digest_2() {
         false,
         &mut nodes,
         &mut TreeIndex::default(),
-      )
-      .unwrap();
+      ).unwrap();
     assert_eq!(proof.nodes(), vec![8, 13, 17].as_slice());
     assert_eq!(proof.verified_by(), 20);
   }
@@ -359,8 +353,7 @@ fn proof_with_a_digest_3() {
         false,
         &mut nodes,
         &mut TreeIndex::default(),
-      )
-      .unwrap();
+      ).unwrap();
     assert_eq!(proof.nodes(), vec![16, 7, 25, 28].as_slice());
     assert_eq!(proof.verified_by(), 30);
   }
@@ -381,8 +374,7 @@ fn proof_with_a_digest_3() {
         false,
         &mut nodes,
         &mut TreeIndex::default(),
-      )
-      .unwrap();
+      ).unwrap();
     assert_eq!(proof.nodes(), vec![21].as_slice());
     assert_eq!(proof.verified_by(), 0);
   }

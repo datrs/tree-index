@@ -1,7 +1,21 @@
-#![deny(missing_docs)]
-#![feature(external_doc)]
-#![doc(include = "../README.md")]
+#![forbid(unsafe_code, missing_debug_implementations, missing_docs)]
 #![cfg_attr(test, deny(warnings))]
+
+//! ## Example
+//! ```rust
+//! extern crate sparse_bitfield as bitfield;
+//! extern crate tree_index;
+//!
+//! use tree_index::TreeIndex;
+//! use self::bitfield::{Bitfield, Change};
+//!
+//! let bitfield = Bitfield::new(1024);
+//! let mut tree = TreeIndex::new(bitfield);
+//! assert_eq!(tree.set(0), Change::Changed);
+//! assert_eq!(tree.set(0), Change::Unchanged);
+//! assert_eq!(tree.get(0), true);
+//! assert_eq!(tree.get(1), false);
+//! ```
 
 extern crate flat_tree as flat;
 extern crate sparse_bitfield as bitfield;
@@ -203,7 +217,7 @@ impl TreeIndex {
   /// ```txt
   ///        3
   ///    1       5
-  ///  0   2   4   6  
+  ///  0   2   4   6
   /// ```
   ///
   /// ```rust

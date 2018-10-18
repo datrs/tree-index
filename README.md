@@ -37,9 +37,9 @@ $ cargo add tree-index
 
 [1]: https://img.shields.io/crates/v/tree-index.svg?style=flat-square
 [2]: https://crates.io/crates/tree-index
-[3]: https://img.shields.io/travis/datrs/tree-index.svg?style=flat-square
+[3]: https://img.shields.io/travis/datrs/tree-index/master.svg?style=flat-square
 [4]: https://travis-ci.org/datrs/tree-index
 [5]: https://img.shields.io/crates/d/tree-index.svg?style=flat-square
 [6]: https://crates.io/crates/tree-index
-[7]: https://docs.rs/tree-index/badge.svg
+[7]: https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square
 [8]: https://docs.rs/tree-index

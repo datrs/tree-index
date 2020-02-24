@@ -44,21 +44,21 @@ impl TreeIndex {
 
   /// Get a bit from the bitfield.
   #[inline]
-  pub fn get(&mut self, index: usize) -> bool {
-    self.bitfield.get(index)
+  pub fn get(&mut self, index: u64) -> bool {
+    self.bitfield.get(index as usize)
   }
 
   /// Set an index on the tree to `true`, and also all of the parents to the
   /// index. Walks the flat-tree upward, until it finds the upper most node.
   #[inline]
-  pub fn set(&mut self, mut index: usize) -> Change {
-    if self.bitfield.set(index, true).is_unchanged() {
+  pub fn set(&mut self, mut index: u64) -> Change {
+    if self.bitfield.set(index as usize, true).is_unchanged() {
       return Change::Unchanged;
     }
 
-    while self.bitfield.get(flat::sibling(index)) {
+    while self.bitfield.get(flat::sibling(index) as usize) {
       index = flat::parent(index);
-      if self.bitfield.set(index, true).is_unchanged() {
+      if self.bitfield.set(index as usize, true).is_unchanged() {
         break;
       }
     }
@@ -69,9 +69,9 @@ impl TreeIndex {
   #[inline]
   pub fn proof<'a>(
     &'a mut self,
-    index: usize,
+    index: u64,
     include_hash: bool,
-    nodes: &'a mut impl convert::AsMut<Vec<usize>>,
+    nodes: &'a mut impl convert::AsMut<Vec<u64>>,
     remote_tree: &mut Self,
   ) -> Option<Proof> {
     let digest = 0;
@@ -88,10 +88,10 @@ impl TreeIndex {
   // - opts.digest: not sure what digest does.
   pub fn proof_with_digest<'a>(
     &'a mut self,
-    index: usize,
-    mut digest: usize,
+    index: u64,
+    mut digest: u64,
     include_hash: bool,
-    nodes: &'a mut impl convert::AsMut<Vec<usize>>,
+    nodes: &'a mut impl convert::AsMut<Vec<u64>>,
     remote_tree: &mut Self,
   ) -> Option<Proof> {
     let nodes = nodes.as_mut();
@@ -175,19 +175,17 @@ impl TreeIndex {
 
   /// Create a digest for data at index.
   #[inline]
-  pub fn digest(&mut self, index: usize) -> usize {
+  pub fn digest(&mut self, index: u64) -> u64 {
     if self.get(index) {
       return 1;
     }
 
     let mut digest = 0;
     let mut next = flat::sibling(index);
-    let max = cmp::max(next + 2, self.bitfield.len()); // TODO(from mafintosh/hypercore): make this less hacky
+    let max = cmp::max(next + 2, self.bitfield.len() as u64); // TODO(from mafintosh/hypercore): make this less hacky
 
     let mut bit = 2;
-    let mut depth = flat::depth(index);
-    let mut parent = flat::parent_with_depth(next, depth);
-    depth += 1;
+    let mut parent = flat::parent(next);
 
     while (flat::right_span(next) < max) || flat::left_span(parent) > 0 {
       if self.get(next) {
@@ -203,8 +201,7 @@ impl TreeIndex {
       }
 
       next = flat::sibling(parent);
-      parent = flat::parent_with_depth(next, depth);
-      depth += 1;
+      parent = flat::parent(next);
       bit *= 2;
     }
     digest
@@ -238,10 +235,10 @@ impl TreeIndex {
   /// assert_eq!(tree.blocks(), 4);
   /// ```
   #[inline]
-  pub fn blocks(&mut self) -> usize {
+  pub fn blocks(&mut self) -> u64 {
     let mut top = 0;
     let mut next = 0;
-    let max = self.bitfield.len();
+    let max = self.bitfield.len() as u64;
 
     while flat::right_span(next) < max {
       next = flat::parent(next);
@@ -261,7 +258,7 @@ impl TreeIndex {
   ///
   /// TODO: don't make this allocate, but fill a vector instead.
   #[inline]
-  pub fn roots(&mut self, roots: &mut Vec<usize>) {
+  pub fn roots(&mut self, roots: &mut Vec<u64>) {
     flat::full_roots(2 * self.blocks(), roots)
   }
 
@@ -271,7 +268,7 @@ impl TreeIndex {
   /// push the `top` value into an array, but returns it instead through the
   /// `Verification` type.
   #[inline]
-  pub fn verified_by(&mut self, index: usize) -> Verification {
+  pub fn verified_by(&mut self, index: u64) -> Verification {
     let has_index = self.get(index);
     if !has_index {
       return Verification { node: 0, top: 0 };
@@ -280,11 +277,11 @@ impl TreeIndex {
     // Find root of current tree.
     let mut depth = flat::depth(index);
     let mut top = index;
-    let mut parent = flat::parent_with_depth(top, depth);
+    let mut parent = flat::parent(top);
     depth += 1;
     while self.get(parent) && self.get(flat::sibling(top)) {
       top = parent;
-      parent = flat::parent_with_depth(top, depth);
+      parent = flat::parent(top);
       depth += 1;
     }
 
@@ -293,14 +290,12 @@ impl TreeIndex {
     // NOTE: this is probably a candidate to move to `flat-tree`.
     depth -= 1;
     while depth != 0 {
-      top = flat::left_child_with_depth(
-        flat::index(depth, flat::offset_with_depth(top, depth) + 1),
-        depth,
-      ).unwrap();
+      top =
+        flat::left_child(flat::index(depth, flat::offset(top) + 1)).unwrap();
       depth -= 1;
 
       while !self.get(top) && depth > 0 {
-        top = flat::left_child_with_depth(top, depth).unwrap();
+        top = flat::left_child(top).unwrap();
         depth -= 1;
       }
     }
@@ -324,7 +319,7 @@ impl Default for TreeIndex {
 
 /// Check if a value is even.
 #[inline]
-fn is_even(n: usize) -> bool {
+fn is_even(n: u64) -> bool {
   match n & 1 {
     0 => true,
     1 => false,

@@ -3,9 +3,9 @@
 /// Merkle trees are proven by checking the parent hashes.
 #[derive(Debug, PartialEq)]
 pub struct Proof<'a> {
-  index: usize,
-  verified_by: usize,
-  nodes: &'a [usize],
+  index: u64,
+  verified_by: u64,
+  nodes: &'a [u64],
 }
 
 impl<'a> Proof<'a> {
@@ -19,7 +19,7 @@ impl<'a> Proof<'a> {
   /// let _proof = Proof::new(0, 0, &nodes);
   /// ```
   #[inline]
-  pub fn new(index: usize, verified_by: usize, nodes: &'a [usize]) -> Self {
+  pub fn new(index: u64, verified_by: u64, nodes: &'a [u64]) -> Self {
     Self {
       index,
       nodes,
@@ -38,7 +38,7 @@ impl<'a> Proof<'a> {
   /// assert_eq!(proof.index(), 0);
   /// ```
   #[inline]
-  pub fn index(&self) -> usize {
+  pub fn index(&self) -> u64 {
     self.index
   }
 
@@ -53,7 +53,7 @@ impl<'a> Proof<'a> {
   /// assert_eq!(proof.verified_by(), 0);
   /// ```
   #[inline]
-  pub fn verified_by(&self) -> usize {
+  pub fn verified_by(&self) -> u64 {
     self.verified_by
   }
 
@@ -68,7 +68,7 @@ impl<'a> Proof<'a> {
   /// assert_eq!(proof.nodes().len(), 0);
   /// ```
   #[inline]
-  pub fn nodes(&self) -> &[usize] {
+  pub fn nodes(&self) -> &[u64] {
     &self.nodes
   }
 }

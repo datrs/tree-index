@@ -2,7 +2,7 @@
 #[derive(Debug, PartialEq)]
 pub struct Verification {
   /// Node that verifies the index.
-  pub node: usize,
+  pub node: u64,
   /// The highest Node found.
-  pub top: usize,
+  pub top: u64,
 }

@@ -9,5 +9,5 @@ authors = ["Yoshua Wuyts <yoshuawuyts@gmail.com>"]
 readme = "README.md"
 
 [dependencies]
-flat-tree = "3.4.0"
-sparse-bitfield = "0.8.1"
+flat-tree = "5.0.0"
+sparse-bitfield = "0.11.0"

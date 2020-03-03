@@ -1,3 +1,24 @@
+## 2020-03-03, Version 0.6.0
+### Commits
+- [[`9e7d303f35`](https://github.com/datrs/tree-index/commit/9e7d303f3598debb3b96940d4d787830c9abcfd0)] (cargo-release) version 0.6.0 (Bruno Tavares)
+- [[`fab4ef7730`](https://github.com/datrs/tree-index/commit/fab4ef7730863e69ffdf03c049adcfbe2d6c1cb2)] Merge pull request #17 from bltavares/usize-to-u64 (Bruno Tavares)
+- [[`0134d747e4`](https://github.com/datrs/tree-index/commit/0134d747e46d9755d46d2fd009ed1dcd641c9ec1)] Point flat-tree to crates version (Bruno Tavares)
+- [[`7213b1dfcd`](https://github.com/datrs/tree-index/commit/7213b1dfcd67679048b365a929fb890d28ded1e3)] Change from usize to u64 (Bruno Tavares)
+- [[`1198d8a7ca`](https://github.com/datrs/tree-index/commit/1198d8a7ca2b59351eda8b48bded8bf1bf666ddd)] Update changelog (Yoshua Wuyts)
+
+### Stats
+```diff
+ .travis.yml         |  6 +++---
+ CHANGELOG.md        | 22 ++++++++++++++++++++++-
+ Cargo.toml          |  6 +++---
+ src/lib.rs          | 55 ++++++++++++++++++++++++------------------------------
+ src/proof.rs        | 14 +++++++-------
+ src/verification.rs |  4 ++--
+ tests/test.rs       | 20 +++++++++++++-------
+ 7 files changed, 75 insertions(+), 52 deletions(-)
+```
+
+
 ## 2018-10-18, Version 0.5.0
 ### Commits
 - [[`1e6b8eeb50`](https://github.com/datrs/tree-index/commit/1e6b8eeb50bbf7b405788cf4377ddac556bb7059)] (cargo-release) version 0.5.0 (Yoshua Wuyts)

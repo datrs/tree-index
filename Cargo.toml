@@ -9,5 +9,5 @@ authors = ["Yoshua Wuyts <yoshuawuyts@gmail.com>"]
 readme = "README.md"
 
 [dependencies]
-flat-tree = { version = "4.1.0", git = "https://github.com/bltavares/flat-tree", branch = "usize-to-u64" }
+flat-tree = "5.0.0"
 sparse-bitfield = "0.11.0"

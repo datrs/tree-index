@@ -304,6 +304,11 @@ impl TreeIndex {
 
     Verification { node, top }
   }
+
+  /// Get a reference to underlying bitfield
+  pub fn as_bitfield(&self) -> &Bitfield {
+    &self.bitfield
+  }
 }
 
 /// Create a TreeIndex with an empty sparse_bitfield instance with a page size

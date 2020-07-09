@@ -1,3 +1,19 @@
+## 2020-07-09, Version 0.6.1
+### Commits
+- [[`b559443333`](https://github.com/datrs/tree-index/commit/b559443333adf4c1da34eb68507eebe8fcd4510c)] (cargo-release) version 0.6.1 (Bruno Tavares)
+- [[`1935f708bc`](https://github.com/datrs/tree-index/commit/1935f708bc815654e6cd45173940b8187d9d644b)] Merge pull request #18 from khodzha/as_bitfield (Bruno Tavares)
+- [[`edd6bf54d4`](https://github.com/datrs/tree-index/commit/edd6bf54d451d6116fd97d6e65d84ac3154e9fa3)] added as_bitfield() -> &Bitfield method (Shamir Khodzha)
+- [[`0eb38f3b97`](https://github.com/datrs/tree-index/commit/0eb38f3b972e677f71da4f087aa2e3b521af42ca)] Update changelog (Bruno Tavares)
+
+### Stats
+```diff
+ CHANGELOG.md | 21 +++++++++++++++++++++
+ Cargo.toml   |  2 +-
+ src/lib.rs   |  5 +++++
+ 3 files changed, 27 insertions(+), 1 deletion(-)
+```
+
+
 ## 2020-03-03, Version 0.6.0
 ### Commits
 - [[`9e7d303f35`](https://github.com/datrs/tree-index/commit/9e7d303f3598debb3b96940d4d787830c9abcfd0)] (cargo-release) version 0.6.0 (Bruno Tavares)
